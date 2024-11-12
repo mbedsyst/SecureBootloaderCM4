@@ -35,6 +35,12 @@ void UART2_Init(void)
 	USART2->CR1 |= USART_CR1_UE;
 }
 
+void UART2_DeInit(void)
+{
+	RCC->AHB1ENR &= ~RCC_AHB1ENR_GPIOAEN;
+	RCC->APB1ENR &= ~RCC_APB1ENR_USART2EN;
+}
+
 void UART2_TxChar(char ch)
 {
 	/*Wait for Transmit Data Register to be empty*/

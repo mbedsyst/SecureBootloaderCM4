@@ -1,0 +1,3 @@
+../Src/Drivers/CRC.c:3:6:CRC_Init	1
+../Src/Drivers/CRC.c:9:6:CRC_DeInit	1
+../Src/Drivers/CRC.c:14:10:CRC_Calculate	2

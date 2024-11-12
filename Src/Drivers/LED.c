@@ -10,6 +10,11 @@ void LED_Init(void)
     GPIOA->PUPDR	&=~(3U<<10);  	// No pull-up/pull-down for PA5
 }
 
+void LED_DeInit(void)
+{
+	 RCC->AHB1ENR &= ~RCC_AHB1ENR_GPIOAEN;
+}
+
 void LED_On(void)
 {
 	GPIOA->ODR |= (1<<5);
