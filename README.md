@@ -1,2 +1,5 @@
 # Secure Bootloader for Cortex-M4
-A bootloader instance for initializing peripherals, verifying application code integrity using CRC Calculation Unit and handing over execution to the application code.
+A bootloader responsible for initializing peripherals, verifying the integrity of the application code using 
+the CRC Calculation Unit, and transferring control to the application code. The bootloader initializes only 
+the USART2 and CRC peripherals, which are de-initialized upon exit. The application code should include 
+metadata in the header, consisting of a pre-shared Magic number, Version Number, Size, Timestamp, and CRC Value.
