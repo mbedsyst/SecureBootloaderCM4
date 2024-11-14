@@ -2,11 +2,12 @@
 
 int main()
 {
+	uint32_t applicationSize;
 	BOOT_Init();
 
-	BOOT_LocateApplication();
+	applicationSize = BOOT_LocateApplication(APP_ID_ADDR);
 
-	if(BOOT_VerifyApplication())
+	if(BOOT_VerifyApplication(applicationSize))
 	{
 		BOOT_LoadApplication();
 	}
@@ -14,8 +15,6 @@ int main()
 	{
 		BOOT_HandleErrors();
 	}
-
-	BOOT_DeInit();
 
 	while(1)
 	{
