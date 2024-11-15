@@ -24,17 +24,17 @@ static void BOOT_DeInit(void)
 	CRC_DeInit();
 }
 
-static BOOT_SaveMetadata(void)
+static void BOOT_SaveMetadata(void)
 {
 	applicationMetadata.id = *(volatile uint32_t *)APP_ID_ADDR;
 	applicationMetadata.version = *(volatile uint32_t *)APP_VERSION_ADDR;
 	applicationMetadata.size = *(volatile uint32_t *)APP_SIZE_ADDR;
 	applicationMetadata.crc = *(volatile uint32_t *)APP_CRC_ADDR;
 
-	printf("[info] Application ID: 0x%08X\r\n", applicationMetadata.id);
-	printf("[info] Application Version: %u\r\n", applicationMetadata.version);
-	printf("[info] Application File size: %u bytes\r\n", applicationMetadata.size);
-	printf("[info] Application CRC Value: 0x%08X\r\n",applicationMetadata.crc);
+	printf("[info] Application ID: 0x%08X\r\n", (unsigned int)applicationMetadata.id);
+	printf("[info] Application Version: %u\r\n", (unsigned int)applicationMetadata.version);
+	printf("[info] Application File size: %u bytes\r\n", (unsigned int)applicationMetadata.size);
+	printf("[info] Application CRC Value: 0x%08X\r\n",(unsigned int)applicationMetadata.crc);
 }
 
 uint32_t BOOT_LocateApplication(uint32_t app_id_address)
@@ -42,7 +42,7 @@ uint32_t BOOT_LocateApplication(uint32_t app_id_address)
 	uint32_t appID = *(volatile uint32_t *)app_id_address;
 	if(appID != APP_ID)
 	{
-		printf("[error] Application missing at: 0x%08X\n\r", (unsigned int)appID);
+		printf("\033[0;31m[error] Application missing at: 0x%08X\033[0m\n\r", (unsigned int)app_id_address);
 		return 0;
 	}
 	printf("[info] Application found at: 0x%08X\n\r", (unsigned int)app_id_address);
@@ -59,7 +59,7 @@ bool BOOT_VerifyApplication(uint32_t app_size)
 
 	if(calculated_CRC != appCRC)
 	{
-		printf("[error] Application Verification failed: Checksum error.\n\r");
+		printf("\033[0;31m[error] Application Verification failed: Checksum error.\033[0m\n\r");
 		return false;
 	}
 
@@ -88,5 +88,5 @@ void BOOT_LoadApplication()
 
 void BOOT_HandleErrors(void)
 {
-	printf("[error] Application Failed to Load.\n\r");
+	printf("\033[0;31m[error] Application Failed to Load.\033[0m\n\r");
 }
