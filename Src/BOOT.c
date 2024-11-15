@@ -5,12 +5,15 @@
 #include "Drivers/SYSTICK.h"
 #include "Drivers/CRC.h"
 
+static app_Metadata applicationMetadata;
+
 void BOOT_Init(void)
 {
 	LED_Init();
 	UART2_Init();
 	CRC_Init();
 	printf("[info] Initializing Bootloader.\n\r");
+
 }
 
 static void BOOT_DeInit(void)
@@ -21,25 +24,36 @@ static void BOOT_DeInit(void)
 	CRC_DeInit();
 }
 
+static BOOT_SaveMetadata(void)
+{
+	applicationMetadata.id = *(volatile uint32_t *)APP_ID_ADDR;
+	applicationMetadata.version = *(volatile uint32_t *)APP_VERSION_ADDR;
+	applicationMetadata.size = *(volatile uint32_t *)APP_SIZE_ADDR;
+	applicationMetadata.crc = *(volatile uint32_t *)APP_CRC_ADDR;
+
+	printf("[info] Application ID: 0x%08X\r\n", applicationMetadata.id);
+	printf("[info] Application Version: %u\r\n", applicationMetadata.version);
+	printf("[info] Application File size: %u bytes\r\n", applicationMetadata.size);
+	printf("[info] Application CRC Value: 0x%08X\r\n",applicationMetadata.crc);
+}
+
 uint32_t BOOT_LocateApplication(uint32_t app_id_address)
 {
 	uint32_t appID = *(volatile uint32_t *)app_id_address;
 	if(appID != APP_ID)
 	{
-		printf("[error] Invalid Application ID: 0x%08X\n\r", (unsigned int)appID);
+		printf("[error] Application missing at: 0x%08X\n\r", (unsigned int)appID);
 		return 0;
 	}
-	printf("[info] Valid Application ID: 0x%08X\n\r", (unsigned int)appID);
-	uint32_t appSize = *(volatile uint32_t *)APP_SIZE_ADDR;
-	printf("[info] Application Size: %u bytes\n\r", (unsigned int)appSize);
-
-	return appSize;
+	printf("[info] Application found at: 0x%08X\n\r", (unsigned int)app_id_address);
+	BOOT_SaveMetadata();
+	return applicationMetadata.size;
 }
 
 bool BOOT_VerifyApplication(uint32_t app_size)
 {
-	uint32_t app_words = app_size/4;
-	uint32_t appCRC = *(volatile uint32_t *)APP_CRC_ADDR;
+	uint32_t app_words = applicationMetadata.size/4;
+	uint32_t appCRC = applicationMetadata.crc;
 	const uint32_t appCODE = *(const uint32_t *)APP_CODE_START;
 	uint32_t calculated_CRC = CRC_Calculate((const uint32_t *)appCODE, app_words);
 
