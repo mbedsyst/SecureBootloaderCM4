@@ -22,6 +22,7 @@ typedef struct
 } app_Metadata;
 
 void BOOT_Init(void);
+void BOOT_PrintBanner(void);
 uint32_t BOOT_LocateApplication(uint32_t app_id_address);
 bool BOOT_VerifyApplication(uint32_t app_size);
 void BOOT_LoadApplication();

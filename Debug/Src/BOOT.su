@@ -1,7 +1,8 @@
-../Src/BOOT.c:10:6:BOOT_Init	8	static
-../Src/BOOT.c:19:13:BOOT_DeInit	8	static
-../Src/BOOT.c:27:13:BOOT_SaveMetadata	8	static
-../Src/BOOT.c:40:10:BOOT_LocateApplication	24	static
-../Src/BOOT.c:53:6:BOOT_VerifyApplication	32	static
-../Src/BOOT.c:70:6:BOOT_LoadApplication	32	static,ignoring_inline_asm
-../Src/BOOT.c:89:6:BOOT_HandleErrors	8	static
+../Src/BOOT.c:10:6:BOOT_PrintBanner	8	static
+../Src/BOOT.c:31:6:BOOT_Init	8	static
+../Src/BOOT.c:39:13:BOOT_DeInit	8	static
+../Src/BOOT.c:47:13:BOOT_SaveMetadata	8	static
+../Src/BOOT.c:60:10:BOOT_LocateApplication	24	static
+../Src/BOOT.c:73:6:BOOT_VerifyApplication	32	static
+../Src/BOOT.c:90:6:BOOT_LoadApplication	32	static,ignoring_inline_asm
+../Src/BOOT.c:109:6:BOOT_HandleErrors	8	static
