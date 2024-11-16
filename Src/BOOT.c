@@ -5,9 +5,9 @@
 #include "Drivers/SYSTICK.h"
 #include "Drivers/CRC.h"
 
-static app_Metadata applicationMetadata;
+static app_metadata_t applicationMetadata;
 
-void BOOT_PrintBanner(void)
+static void BOOT_PrintBanner(void)
 {
 
 	printf(" ______  ______  ______  ______  ______  ______  ______  ______  ______  ______  ______ \n\r");
@@ -33,6 +33,7 @@ void BOOT_Init(void)
 	LED_Init();
 	UART2_Init();
 	CRC_Init();
+	BOOT_PrintBanner();
 
 }
 

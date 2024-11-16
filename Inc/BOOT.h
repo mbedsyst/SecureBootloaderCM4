@@ -15,14 +15,16 @@
 
 typedef struct
 {
-	uint32_t id;
-	uint32_t version;
-	uint32_t size;
-	uint32_t crc;
-} app_Metadata;
+    uint32_t id;
+    uint32_t app_start;
+    uint32_t size;
+    uint32_t version;
+    uint32_t crc;
+    uint32_t timestamp;
+    char application_name[16];
+} app_metadata_t;
 
 void BOOT_Init(void);
-void BOOT_PrintBanner(void);
 uint32_t BOOT_LocateApplication(uint32_t app_id_address);
 bool BOOT_VerifyApplication(uint32_t app_size);
 void BOOT_LoadApplication();
