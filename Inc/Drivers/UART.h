@@ -8,7 +8,8 @@ void UART2_Init(void);
 void UART2_DeInit(void);
 void UART2_TxChar(char ch);
 void UART2_TxString(char *str);
-uint8_t UART2_RxChar(void);
+char UART2_RxChar(void);
+
 
 #endif
 

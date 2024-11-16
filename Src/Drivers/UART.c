@@ -57,11 +57,12 @@ void UART2_TxString(char *str)
 	}
 }
 
-uint8_t UART2_RxChar(void)
+char UART2_RxChar(void)
 {
-	while(!(USART2->SR & (1<<5)));
-	return USART2->DR;
+    while (!(USART2->SR & USART_SR_RXNE));
+    return (char)(USART2->DR & 0xFF);
 }
+
 
 int _write(int file, char *ptr, int len)
 {
@@ -72,4 +73,18 @@ int _write(int file, char *ptr, int len)
     return len;
 }
 
+int _read(int file, char *ptr, int len)
+{
+    (void)file;
+    for (int i = 0; i < len; i++)
+    {
+        ptr[i] = UART2_RxChar();
+        if (ptr[i] == '\r')
+        {
+            ptr[i] = '\n';
+            break;
+        }
+    }
+    return len;
+}
 
