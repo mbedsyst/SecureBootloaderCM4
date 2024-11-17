@@ -7,18 +7,21 @@
 C_SRCS += \
 ../Src/Drivers/CRC.c \
 ../Src/Drivers/LED.c \
+../Src/Drivers/SPI.c \
 ../Src/Drivers/SYSTICK.c \
 ../Src/Drivers/UART.c 
 
 OBJS += \
 ./Src/Drivers/CRC.o \
 ./Src/Drivers/LED.o \
+./Src/Drivers/SPI.o \
 ./Src/Drivers/SYSTICK.o \
 ./Src/Drivers/UART.o 
 
 C_DEPS += \
 ./Src/Drivers/CRC.d \
 ./Src/Drivers/LED.d \
+./Src/Drivers/SPI.d \
 ./Src/Drivers/SYSTICK.d \
 ./Src/Drivers/UART.d 
 
@@ -30,7 +33,7 @@ Src/Drivers/%.o Src/Drivers/%.su Src/Drivers/%.cyclo: ../Src/Drivers/%.c Src/Dri
 clean: clean-Src-2f-Drivers
 
 clean-Src-2f-Drivers:
-	-$(RM) ./Src/Drivers/CRC.cyclo ./Src/Drivers/CRC.d ./Src/Drivers/CRC.o ./Src/Drivers/CRC.su ./Src/Drivers/LED.cyclo ./Src/Drivers/LED.d ./Src/Drivers/LED.o ./Src/Drivers/LED.su ./Src/Drivers/SYSTICK.cyclo ./Src/Drivers/SYSTICK.d ./Src/Drivers/SYSTICK.o ./Src/Drivers/SYSTICK.su ./Src/Drivers/UART.cyclo ./Src/Drivers/UART.d ./Src/Drivers/UART.o ./Src/Drivers/UART.su
+	-$(RM) ./Src/Drivers/CRC.cyclo ./Src/Drivers/CRC.d ./Src/Drivers/CRC.o ./Src/Drivers/CRC.su ./Src/Drivers/LED.cyclo ./Src/Drivers/LED.d ./Src/Drivers/LED.o ./Src/Drivers/LED.su ./Src/Drivers/SPI.cyclo ./Src/Drivers/SPI.d ./Src/Drivers/SPI.o ./Src/Drivers/SPI.su ./Src/Drivers/SYSTICK.cyclo ./Src/Drivers/SYSTICK.d ./Src/Drivers/SYSTICK.o ./Src/Drivers/SYSTICK.su ./Src/Drivers/UART.cyclo ./Src/Drivers/UART.d ./Src/Drivers/UART.o ./Src/Drivers/UART.su
 
 .PHONY: clean-Src-2f-Drivers
 

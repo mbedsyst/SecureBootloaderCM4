@@ -4,5 +4,6 @@
 ../Src/Drivers/UART.c:38:6:UART2_DeInit	4	static
 ../Src/Drivers/UART.c:44:6:UART2_TxChar	16	static
 ../Src/Drivers/UART.c:52:6:UART2_TxString	16	static
-../Src/Drivers/UART.c:60:9:UART2_RxChar	4	static
-../Src/Drivers/UART.c:66:5:_write	32	static
+../Src/Drivers/UART.c:60:6:UART2_RxChar	4	static
+../Src/Drivers/UART.c:67:5:_write	32	static
+../Src/Drivers/UART.c:76:5:_read	40	static
