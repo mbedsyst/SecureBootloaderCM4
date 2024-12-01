@@ -19,6 +19,7 @@ typedef struct
     uint32_t crc;
     uint32_t timestamp;
     uint32_t valid;
+    uint32_t start_addr;
     char application_name[16];
 } app_code_metadata_t;
 
@@ -42,9 +43,9 @@ static void PrintBanner(void)
 	printf("|_|  ███████ ███████  ██████  ██████  ██   ██ ███████ ██████   ██████   ██████     ██     |_|\n\r");
 	printf("|_| ______  ______  ______  ______  ______  _____  ______  ______  ______  ______  ______ |_|\n\r");
 	printf("|_||______||______||______||______||______||_____||______||______||______||______||______||_|\n\r");
-	printf("                                                                                              \n\r");
-	printf("                                                                                              \n\r");
-	printf("                                                                                              \n\r");
+	printf("\n\r");
+	printf("\n\r");
+	printf("\n\r");
 	printf("[info] Initializing LED\n\r");
 	printf("[info] Initializing UART\n\r");
 	printf("[info] Initializing CRC\n\r");
@@ -60,7 +61,7 @@ void BOOT_Init(void)
 	UART2_Init();
 	CRC_Init();
 	W25Q_Init();
-	BOOT_PrintBanner();
+	PrintBanner();
 
 }
 
@@ -86,10 +87,6 @@ static void FillSlotMetadata(app_slot_metadata_t *slots, int num_slots)
 		{
 			slots[i].is_valid = 1;
 		}
-		else
-		{
-			slots[i].is_valid = 0;
-		}
 	}
 }
 
@@ -99,11 +96,12 @@ static void FillCodeMetadata(app_slot_metadata_t *slots, app_code_metadata_t *co
 	{
 		if(slots[i].is_valid)
 		{
-			codes[i].id 		= *(volatile uint32_t *)(APP_SLOT_START_ADDR + (i * APP_SLOT_SIZE));
+			codes[i].id 		= *(volatile uint32_t *)(APP_SLOT_START_ADDR + (i * APP_SLOT_SIZE) + 0);
 			codes[i].size 		= *(volatile uint32_t *)(APP_SLOT_START_ADDR + (i * APP_SLOT_SIZE) + 1);
 			codes[i].version 	= *(volatile uint32_t *)(APP_SLOT_START_ADDR + (i * APP_SLOT_SIZE) + 2);
 			codes[i].crc 		= *(volatile uint32_t *)(APP_SLOT_START_ADDR + (i * APP_SLOT_SIZE) + 3);
 			codes[i].timestamp	= *(volatile uint32_t *)(APP_SLOT_START_ADDR + (i * APP_SLOT_SIZE) + 4);
+			codes[i].start_addr = (uint32_t)(APP_SLOT_START_ADDR + (i * APP_SLOT_SIZE) + 10);
 		}
 	}
 }
@@ -112,7 +110,8 @@ static void VerifyAppChecksum(app_code_metadata_t *codes, int num_slots)
 {
 	for(int i = 0; i < num_slots; i++)
 	{
-		uint32_t app_crc = CRC_Calculate(data, codes[i].size);
+		const uint32_t app_code_start= *(const uint32_t *)(codes[i].start_addr);
+		uint32_t app_crc = CRC_Calculate((const uint32_t *)app_code_start, codes[i].size/4);
 		if(app_crc != codes[i].crc)
 		{
 			codes[i].valid = 0;
@@ -129,7 +128,7 @@ static void ShowAvailableApplications(app_code_metadata_t *codes, int num_slots)
 	printf("S.No.\tApplication\tSize\tVersion\tTimestamp\n\r");
 	for(int i = 0; i < num_slots; i++)
 	{
-		printf("%d\t%s\t%d\t%d\t%d\n\r", i+1, codes[i].application_name, codes[i].size, codes[i].version, codes[i].timestamp);
+		printf("%d\t%s\t%d\t%d\t%d\n\r", i+1, codes[i].application_name, (int)codes[i].size, (int)codes[i].version, (int)codes[i].timestamp);
 	}
 	printf("\n\nChoose the Application to Boot, else latest version will be loaded.\n\r");
 }
@@ -137,15 +136,10 @@ static void ShowAvailableApplications(app_code_metadata_t *codes, int num_slots)
 static void ChooseApplication(app_code_metadata_t *codes, int num_slots)
 {
 	uint8_t option;
-	printf("[info] Available Applications in Storage: \n\n\r");
+	printf("[info] Available Applications in Storage:\n\r");
 	ShowAvailableApplications(codes, APP_SLOT_COUNT);
 	scanf("%d", &option);
 	return option;
-
-}
-
-static bool BOOT_NewFirmwareAvailable(void)
-{
 
 }
 
@@ -157,13 +151,14 @@ static void FindApplications(void)
 	FillSlotMetadata(applicationSlotMetadata, APP_SLOT_COUNT);
 	FillCodeMetadata(applicationSlotMetadata, applicationCodeMetadata, APP_SLOT_COUNT);
 	VerifyAppChecksum(applicationCodeMetadata, APP_SLOT_COUNT);
-
 	ChooseApplication(applicationCodeMetadata, APP_SLOT_COUNT);
 }
 
 
 uint32_t BOOT_LocateApplication(uint32_t app_id_address)
 {
+
+	FindApplications();
 /*	uint32_t appID = *(volatile uint32_t *)app_id_address;
 	if(appID != APP_ID)
 	{
@@ -173,6 +168,12 @@ uint32_t BOOT_LocateApplication(uint32_t app_id_address)
 	printf("[info] Application found at: 0x%08X\n\r", (unsigned int)app_id_address);
 	BOOT_SaveMetadata();
 	return applicationMetadata.size;*/
+}
+
+
+static void BOOT_FirmwareUpdate(void)
+{
+
 }
 
 bool BOOT_VerifyApplication(uint32_t app_size)
