@@ -29,6 +29,8 @@ typedef struct
 	uint8_t is_valid;
 } app_slot_metadata_t;
 
+app_code_metadata_t AppMetadata[3];
+app_slot_metadata_t SlotMetadata[3];
 
 static void PrintBanner(void)
 {
@@ -123,96 +125,24 @@ static void VerifyAppChecksum(app_code_metadata_t *codes, int num_slots)
 	}
 }
 
-static void ShowAvailableApplications(app_code_metadata_t *codes, int num_slots)
+static void PrintValidAppCount(app_code_metadata_t *codes, int num_slots)
 {
-	printf("S.No.\tApplication\tSize\tVersion\tTimestamp\n\r");
+	uint8_t count = 0;
 	for(int i = 0; i < num_slots; i++)
 	{
-		printf("%d\t%s\t%d\t%d\t%d\n\r", i+1, codes[i].application_name, (int)codes[i].size, (int)codes[i].version, (int)codes[i].timestamp);
+		if(codes[i].valid == 1)
+		{
+			count++;
+		}
 	}
-	printf("\n\nChoose the Application to Boot, else latest version will be loaded.\n\r");
+	printf("[info] Found %d valid applications in the Internal Flash Memory\n\r", count);
 }
 
-static void ChooseApplication(app_code_metadata_t *codes, int num_slots)
+void FindApplications(void)
 {
-	uint8_t option;
-	printf("[info] Available Applications in Storage:\n\r");
-	ShowAvailableApplications(codes, APP_SLOT_COUNT);
-	scanf("%d", &option);
-	return option;
-
+	FillSlotMetadata(SlotMetadata, APP_SLOT_COUNT);
+	FillCodeMetadata(SlotMetadata, AppMetadata, APP_SLOT_COUNT);
+	VerifyAppChecksum(AppMetadata, APP_SLOT_COUNT);
+	PrintValidAppCount(AppMetadata, APP_SLOT_COUNT);
 }
 
-static void FindApplications(void)
-{
-	static app_code_metadata_t applicationCodeMetadata[3];
-	static app_slot_metadata_t applicationSlotMetadata[3];
-
-	FillSlotMetadata(applicationSlotMetadata, APP_SLOT_COUNT);
-	FillCodeMetadata(applicationSlotMetadata, applicationCodeMetadata, APP_SLOT_COUNT);
-	VerifyAppChecksum(applicationCodeMetadata, APP_SLOT_COUNT);
-	ChooseApplication(applicationCodeMetadata, APP_SLOT_COUNT);
-}
-
-
-uint32_t BOOT_LocateApplication(uint32_t app_id_address)
-{
-
-	FindApplications();
-/*	uint32_t appID = *(volatile uint32_t *)app_id_address;
-	if(appID != APP_ID)
-	{
-		printf("\033[0;31m[error] Application missing at: 0x%08X\033[0m\n\r", (unsigned int)app_id_address);
-		return 0;
-	}
-	printf("[info] Application found at: 0x%08X\n\r", (unsigned int)app_id_address);
-	BOOT_SaveMetadata();
-	return applicationMetadata.size;*/
-}
-
-
-static void BOOT_FirmwareUpdate(void)
-{
-
-}
-
-bool BOOT_VerifyApplication(uint32_t app_size)
-{
-/*	uint32_t app_words = applicationMetadata.size/4;
-	uint32_t appCRC = applicationMetadata.crc;
-	const uint32_t appCODE = *(const uint32_t *)APP_CODE_START;
-	uint32_t calculated_CRC = CRC_Calculate((const uint32_t *)appCODE, app_words);
-
-	if(calculated_CRC != appCRC)
-	{
-		printf("\033[0;31m[error] Application Verification failed: Checksum error.\033[0m\n\r");
-		return false;
-	}
-
-	printf("[info] Application Verification success: Checksum pass.\n\r");
-	return true;*/
-}
-
-void BOOT_LoadApplication()
-{/*
-	uint32_t app_code_start = APP_CODE_START;
-	uint32_t *app_vector_table = (uint32_t *)app_code_start;
-	uint32_t app_stack_pointer = app_vector_table[0];
-	uint32_t app_reset_handler = app_vector_table[1];
-
-	__disable_irq();
-
-	BOOT_DeInit();
-
-	SCB->VTOR = app_code_start;
-	__set_MSP(app_stack_pointer);
-
-	void (*reset_handler)(void) = (void (*)(void))app_reset_handler;
-	reset_handler();
-	while(1);*/
-}
-
-void BOOT_HandleErrors(void)
-{
-	printf("\033[0;31m[error] Application Failed to Load.\033[0m\n\r");
-}
