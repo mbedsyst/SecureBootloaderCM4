@@ -13,7 +13,6 @@ void CRC_DeInit(void)
 
 uint32_t CRC_Calculate(const uint32_t *data, uint32_t len)
 {
-	CRC->CR |= CRC_CR_RESET;
 	while(len--)
 	{
 		CRC->DR = *data++;

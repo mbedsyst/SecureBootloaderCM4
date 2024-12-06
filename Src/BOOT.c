@@ -11,6 +11,10 @@
 #define APP_SLOT_COUNT			3
 #define APP_SLOT_SIZE      		(128 * 1024)
 
+#define UPDATE_BLOCK_SIZE 		256
+#define EXTERNAL_APP_START_ADDR 0x000002C  // Example start address in external flash
+#define EXTERNAL_APP_SIZE       128*1024
+
 typedef struct
 {
     uint32_t id;
@@ -30,7 +34,9 @@ typedef struct
 } app_slot_metadata_t;
 
 app_code_metadata_t AppMetadata[3];
+app_code_metadata_t UpdateMetadata;
 app_slot_metadata_t SlotMetadata[3];
+
 
 static void PrintBanner(void)
 {
@@ -138,11 +144,84 @@ static void PrintValidAppCount(app_code_metadata_t *codes, int num_slots)
 	printf("[info] Found %d valid applications in the Internal Flash Memory\n\r", count);
 }
 
+static void ProcessFirmwareMetadata(uint8_t *firmware_metadata)
+{
+	uint32_t magic_number = *(uint32_t *)firmware_metadata;
+	if (magic_number != APP_MAGIC_NUMBER)
+	{
+		printf("[error] Invalid Magic Number in External Flash.\n\r");
+		return ;
+	}
+	memcpy(&UpdateMetadata, firmware_metadata, sizeof(app_code_metadata_t));
+}
+
+static int8_t VerifyFirmwareChecksum(uint32_t app_start_address)
+{
+    uint8_t buffer[UPDATE_BLOCK_SIZE];
+    uint32_t crc_value;
+    uint32_t expected_crc = UpdateMetadata.crc;
+    uint32_t bytes_remaining = UpdateMetadata.size;
+    uint32_t current_address = app_start_address;
+
+    CRC_Init();
+
+    while (bytes_remaining > 0)
+    {
+        uint16_t bytes_to_read = (bytes_remaining > UPDATE_BLOCK_SIZE) ? UPDATE_BLOCK_SIZE : bytes_remaining;
+        W25Q_ReadData(current_address / 256, current_address % 256, buffer, bytes_to_read);
+        crc_value = CRC_Calculate((const uint32_t *)buffer, (bytes_to_read + 3) / 4);
+        bytes_remaining -= bytes_to_read;
+        current_address += bytes_to_read;
+    }
+
+    if (crc_value == expected_crc)
+    {
+
+    	return 1;
+    }
+    else
+    {
+
+        return 0;
+    }
+}
+
+static void CheckOldestVersion(app_code_metadata_t *codes, int num_slots)
+{
+	uint32_t oldest_version = codes[0].version;
+	for(int i = 0; i < num_slots; i++)
+	{
+		if(codes[i].version < oldest_version)
+		{
+			oldest_version = codes[i].version;
+		}
+	}
+
+	// ToDo Return oldest version data
+
+}
+
 void FindApplications(void)
 {
 	FillSlotMetadata(SlotMetadata, APP_SLOT_COUNT);
 	FillCodeMetadata(SlotMetadata, AppMetadata, APP_SLOT_COUNT);
 	VerifyAppChecksum(AppMetadata, APP_SLOT_COUNT);
 	PrintValidAppCount(AppMetadata, APP_SLOT_COUNT);
+}
+
+void CheckFirmwareUpdate(void)
+{
+	uint8_t firmware_metadata[44];
+	int8_t err = 0;
+	uint32_t oldest_app_address;
+	W25Q_Init();
+	W25Q_ReadData(0, 0, firmware_metadata, sizeof(firmware_metadata));
+	err = ProcessFirmwareMetadata(firmware_metadata);
+	if(err < 0)
+	{
+		printf("[error] Exiting Firmware Update routine.\n\r");
+		break;
+	}
+	oldest_app_address = CheckOldestVersion(AppMetadata, APP_SLOT_COUNT);
 }
 
