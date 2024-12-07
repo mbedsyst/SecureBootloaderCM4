@@ -1,0 +1,7 @@
+..//Headers/CMSIS/Include/core_cm4.h:1684:22:__NVIC_EnableIRQ	16	static,ignoring_inline_asm
+..//Headers/CMSIS/Include/core_cm4.h:1722:22:__NVIC_DisableIRQ	16	static,ignoring_inline_asm
+..//Headers/CMSIS/Include/core_cm4.h:1814:22:__NVIC_SetPriority	16	static
+../Src/Drivers/TIM.c:8:6:TIM2_Init	4	static
+../Src/Drivers/TIM.c:21:6:TIM2_Start	8	static
+../Src/Drivers/TIM.c:29:6:TIM2_Stop	8	static
+../Src/Drivers/TIM.c:36:6:TIM2_IRQHandler	8	static

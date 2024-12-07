@@ -2,5 +2,10 @@
 
 int main()
 {
+	Bootloader_Run();
 
+	while(1)
+	{
+
+	}
 }

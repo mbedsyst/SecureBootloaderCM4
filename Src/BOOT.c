@@ -3,6 +3,7 @@
 #include "Drivers/LED.h"
 #include "Drivers/UART.h"
 #include "Drivers/SYSTICK.h"
+#include "Drivers/TIM.h"
 #include "Drivers/CRC.h"
 #include "Libraries/W25Qxx.h"
 
@@ -51,9 +52,7 @@ static void PrintBanner(void)
 	printf("|_|  ███████ ███████  ██████  ██████  ██   ██ ███████ ██████   ██████   ██████     ██     |_|\n\r");
 	printf("|_| ______  ______  ______  ______  ______  _____  ______  ______  ______  ______  ______ |_|\n\r");
 	printf("|_||______||______||______||______||______||_____||______||______||______||______||______||_|\n\r");
-	printf("\n\r");
-	printf("\n\r");
-	printf("\n\r");
+	printf("\n\n\n\r");
 	printf("[info] Initializing LED\n\r");
 	printf("[info] Initializing UART\n\r");
 	printf("[info] Initializing CRC\n\r");
@@ -70,7 +69,6 @@ void BOOT_Init(void)
 	CRC_Init();
 	W25Q_Init();
 	PrintBanner();
-
 }
 
 static void BOOT_DeInit(void)
@@ -201,6 +199,82 @@ static void CheckOldestVersion(app_code_metadata_t *codes, int num_slots)
 
 }
 
+static int FindDefaultApplication(app_code_metadata_t *codes, int num_slots)
+{
+    int default_index = -1;
+    uint32_t latest_version = 0;
+
+    for (int i = 0; i < num_slots; i++)
+    {
+        if (codes[i].valid && codes[i].version > latest_version)
+        {
+            latest_version = codes[i].version;
+            default_index = i;
+        }
+    }
+    return default_index;
+}
+
+// Function to choose application to boot
+static int ChooseApplicationToBoot(app_code_metadata_t *codes, int num_slots)
+{
+    printf("Available Applications:\n");
+    for (int i = 0; i < num_slots; i++)
+    {
+        if (codes[i].valid)
+        {
+            printf("[%d] %s (Version: %d, Size: %d bytes)\n\r", i + 1, codes[i].application_name, codes[i].version, codes[i].size);
+        }
+    }
+
+    printf("Choose an application to boot (1-3):\n\r");
+    printf("Booting the default application in 8 seconds...\n\r");
+
+    TIM2_Init();  // Initialize the timer
+    TIM2_Start(); // Start the timer
+    char user_input[10];
+
+    while (!timeout_flag)
+    {
+        if (fgets(user_input, sizeof(user_input), stdin) != NULL)
+        {
+            int choice = atoi(user_input);
+            if (choice >= 1 && choice <= 3 && codes[choice - 1].valid)
+            {
+                TIM2_Stop(); // Stop the timer on valid input
+                return choice - 1;
+            }
+            else
+            {
+                printf("Invalid choice. Please enter a valid option.\n\r");
+            }
+        }
+    }
+    printf("No selection made. Booting the default application...\n\r");
+    return find_default_application(); // Return the default application
+}
+
+static void BootApplication(app_code_metadata_t *codes, int app_index)
+{
+    if (app_index < 0 || app_index > 2 || !codes[app_index].valid)
+    {
+        printf("Invalid application index or application not valid.\n\r");
+        return;
+    }
+    uint32_t app_start_addr = codes[app_index].start_addr;
+    uint32_t *app_vector_table = (uint32_t *)app_start_addr;
+
+    BOOT_DeInit();
+
+    __disable_irq();
+    SCB->VTOR = app_start_addr;
+    __set_MSP(app_vector_table[0]);
+    void (*app_reset_handler)(void) = (void (*)(void))app_vector_table[1];
+    app_reset_handler();
+
+    while (1);
+}
+
 void FindApplications(void)
 {
 	FillSlotMetadata(SlotMetadata, APP_SLOT_COUNT);
@@ -224,4 +298,21 @@ void CheckFirmwareUpdate(void)
 	}
 	oldest_app_address = CheckOldestVersion(AppMetadata, APP_SLOT_COUNT);
 }
+
+void SelectApplicationToLoad(void)
+{
+	int app_index = 0;
+	FindDefaultApplication(AppMetadata, APP_SLOT_COUNT);
+	app_index = ChooseApplicationToBoot(AppMetadata, APP_SLOT_COUNT);
+	BootApplication(AppMetadata, app_index);
+}
+
+void Bootloader_Run(void)
+{
+	BOOT_Init();
+	FindApplications();
+	CheckFirmwareUpdate();
+	SelectApplicationToLoad();
+}
+
 

@@ -1,8 +1,0 @@
-../Src/BOOT.c:35:13:PrintBanner	8	static
-../Src/BOOT.c:60:6:BOOT_Init	8	static
-../Src/BOOT.c:70:13:BOOT_DeInit	8	static
-../Src/BOOT.c:79:13:FillSlotMetadata	24	static
-../Src/BOOT.c:95:13:FillCodeMetadata	32	static
-../Src/BOOT.c:111:13:VerifyAppChecksum	32	static
-../Src/BOOT.c:128:13:PrintValidAppCount	24	static
-../Src/BOOT.c:141:6:FindApplications	8	static

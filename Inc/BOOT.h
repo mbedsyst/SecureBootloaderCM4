@@ -6,10 +6,6 @@
 #include <stdbool.h>
 
 
-void BOOT_Init(void);
-uint32_t BOOT_LocateApplication(uint32_t app_id_address);
-bool BOOT_VerifyApplication(uint32_t app_size);
-void BOOT_LoadApplication();
-void BOOT_HandleErrors();
+void Bootloader_Run(void);
 
 #endif
