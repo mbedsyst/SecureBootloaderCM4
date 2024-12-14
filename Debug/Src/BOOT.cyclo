@@ -1,0 +1,17 @@
+../Src/BOOT.c:42:13:PrintBanner	1
+../Src/BOOT.c:65:6:BOOT_Init	1
+../Src/BOOT.c:74:13:BOOT_DeInit	1
+../Src/BOOT.c:83:13:FillSlotMetadata	3
+../Src/BOOT.c:99:13:FillCodeMetadata	3
+../Src/BOOT.c:115:13:VerifyAppChecksum	3
+../Src/BOOT.c:132:13:PrintValidAppCount	3
+../Src/BOOT.c:145:12:ProcessFirmwareMetadata	2
+../Src/BOOT.c:156:15:VerifyFirmwareChecksum	4
+../Src/BOOT.c:187:12:CheckOldestVersion	3
+../Src/BOOT.c:202:12:FindDefaultApplication	4
+../Src/BOOT.c:219:12:ChooseApplicationToBoot	8
+../Src/BOOT.c:258:13:BootApplication	4
+../Src/BOOT.c:279:6:FindApplications	1
+../Src/BOOT.c:287:6:CheckFirmwareUpdate	2
+../Src/BOOT.c:312:6:SelectApplicationToLoad	1
+../Src/BOOT.c:320:6:Bootloader_Run	1

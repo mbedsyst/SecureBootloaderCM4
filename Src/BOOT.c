@@ -142,13 +142,13 @@ static void PrintValidAppCount(app_code_metadata_t *codes, int num_slots)
 	printf("[info] Found %d valid applications in the Internal Flash Memory\n\r", count);
 }
 
-static void ProcessFirmwareMetadata(uint8_t *firmware_metadata)
+static int ProcessFirmwareMetadata(uint8_t *firmware_metadata)
 {
 	uint32_t magic_number = *(uint32_t *)firmware_metadata;
 	if (magic_number != APP_MAGIC_NUMBER)
 	{
 		printf("[error] Invalid Magic Number in External Flash.\n\r");
-		return ;
+		return -1;
 	}
 	memcpy(&UpdateMetadata, firmware_metadata, sizeof(app_code_metadata_t));
 }
@@ -184,7 +184,7 @@ static int8_t VerifyFirmwareChecksum(uint32_t app_start_address)
     }
 }
 
-static void CheckOldestVersion(app_code_metadata_t *codes, int num_slots)
+static int CheckOldestVersion(app_code_metadata_t *codes, int num_slots)
 {
 	uint32_t oldest_version = codes[0].version;
 	for(int i = 0; i < num_slots; i++)
@@ -223,7 +223,7 @@ static int ChooseApplicationToBoot(app_code_metadata_t *codes, int num_slots)
     {
         if (codes[i].valid)
         {
-            printf("[%d] %s (Version: %d, Size: %d bytes)\n\r", i + 1, codes[i].application_name, codes[i].version, (int)codes[i].size);
+            printf("[%d] %s (Version: %d, Size: %d bytes)\n\r", i + 1, codes[i].application_name, (int)codes[i].version, (int)codes[i].size);
         }
     }
 
@@ -251,7 +251,8 @@ static int ChooseApplicationToBoot(app_code_metadata_t *codes, int num_slots)
         }
     }
     printf("No selection made. Booting the default application...\n\r");
-    return FindDefaultApplication(); // Return the default application
+    // Return the default application
+    return FindDefaultApplication(AppMetadata, APP_SLOT_COUNT);
 }
 
 static void BootApplication(app_code_metadata_t *codes, int app_index)

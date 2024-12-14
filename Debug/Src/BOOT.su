@@ -1,0 +1,17 @@
+../Src/BOOT.c:42:13:PrintBanner	8	static
+../Src/BOOT.c:65:6:BOOT_Init	8	static
+../Src/BOOT.c:74:13:BOOT_DeInit	8	static
+../Src/BOOT.c:83:13:FillSlotMetadata	24	static
+../Src/BOOT.c:99:13:FillCodeMetadata	32	static
+../Src/BOOT.c:115:13:VerifyAppChecksum	32	static
+../Src/BOOT.c:132:13:PrintValidAppCount	24	static
+../Src/BOOT.c:145:12:ProcessFirmwareMetadata	24	static
+../Src/BOOT.c:156:15:VerifyFirmwareChecksum	296	static
+../Src/BOOT.c:187:12:CheckOldestVersion	24	static
+../Src/BOOT.c:202:12:FindDefaultApplication	32	static
+../Src/BOOT.c:219:12:ChooseApplicationToBoot	56	static
+../Src/BOOT.c:258:13:BootApplication	32	static,ignoring_inline_asm
+../Src/BOOT.c:279:6:FindApplications	8	static
+../Src/BOOT.c:287:6:CheckFirmwareUpdate	64	static
+../Src/BOOT.c:312:6:SelectApplicationToLoad	16	static
+../Src/BOOT.c:320:6:Bootloader_Run	8	static
