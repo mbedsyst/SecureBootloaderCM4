@@ -7,8 +7,8 @@ void FLASH_Unlock(void)
 {
     if (FLASH->CR & FLASH_CR_LOCK)
     {
-        FLASH->KEYR = FLASH_KEY1;
-        FLASH->KEYR = FLASH_KEY2;
+        FLASH->KEYR = 0x45670123;
+        FLASH->KEYR = 0xCDEF89AB;
     }
 }
 

@@ -1,0 +1,4 @@
+../Src/Drivers/FLASH.c:6:6:FLASH_Unlock	4	static
+../Src/Drivers/FLASH.c:16:6:FLASH_Lock	4	static
+../Src/Drivers/FLASH.c:22:5:FLASH_EraseSector	16	static
+../Src/Drivers/FLASH.c:51:5:FLASH_Write	32	static

@@ -223,7 +223,7 @@ static int ChooseApplicationToBoot(app_code_metadata_t *codes, int num_slots)
     {
         if (codes[i].valid)
         {
-            printf("[%d] %s (Version: %d, Size: %d bytes)\n\r", i + 1, codes[i].application_name, codes[i].version, codes[i].size);
+            printf("[%d] %s (Version: %d, Size: %d bytes)\n\r", i + 1, codes[i].application_name, codes[i].version, (int)codes[i].size);
         }
     }
 
@@ -251,7 +251,7 @@ static int ChooseApplicationToBoot(app_code_metadata_t *codes, int num_slots)
         }
     }
     printf("No selection made. Booting the default application...\n\r");
-    return find_default_application(); // Return the default application
+    return FindDefaultApplication(); // Return the default application
 }
 
 static void BootApplication(app_code_metadata_t *codes, int app_index)
@@ -294,9 +294,18 @@ void CheckFirmwareUpdate(void)
 	if(err < 0)
 	{
 		printf("[error] Exiting Firmware Update routine.\n\r");
-		break;
+		return;
 	}
 	oldest_app_address = CheckOldestVersion(AppMetadata, APP_SLOT_COUNT);
+
+	/* ToDo Firmware Transfer function from External memory to Internal Flash
+	 * 		_________________________________________________________________
+	 * 		1. Write blocks of 1024 bytes of data from External Memory to Internal Flash
+	 * 		2. Continue till whole data is transferred
+	 * 		3. Verify the checksum using CRC
+	 * 		4. Update application metadata table
+	 * 		5. Print confirmation to Serial terminalS
+	 * */
 }
 
 void SelectApplicationToLoad(void)
